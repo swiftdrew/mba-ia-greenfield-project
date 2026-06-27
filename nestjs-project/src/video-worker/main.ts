@@ -7,6 +7,8 @@ import { join } from 'path';
 import { promisify } from 'util';
 import { Job, Worker } from 'bullmq';
 import { DataSource } from 'typeorm';
+import { Channel } from '../channels/entities/channel.entity';
+import { User } from '../users/entities/user.entity';
 import { Video, VideoStatus } from '../videos/entities/video.entity';
 import { StorageService } from '../storage/storage.service';
 import storageConfig from '../config/storage.config';
@@ -35,7 +37,7 @@ const dataSource = new DataSource({
   password: process.env.DB_PASSWORD ?? 'streamtube',
   database: process.env.DB_NAME ?? 'streamtube',
   synchronize: false,
-  entities: [Video],
+  entities: [User, Channel, Video],
 });
 
 const storage = new StorageService(storageConfig() as never);
@@ -77,7 +79,7 @@ async function generateThumbnail(
     '-i',
     sourcePath,
     '-ss',
-    '00:00:01.000',
+    '00:00:00.000',
     '-frames:v',
     '1',
     targetPath,

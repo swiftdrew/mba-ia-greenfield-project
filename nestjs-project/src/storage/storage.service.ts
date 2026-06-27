@@ -12,7 +12,8 @@ import {
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import type { ConfigType } from '@nestjs/config';
-import { createReadStream, createWriteStream } from 'fs';
+import { createWriteStream } from 'fs';
+import { readFile } from 'fs/promises';
 import { pipeline } from 'stream/promises';
 import storageConfig from '../config/storage.config';
 import { CompletedUploadPart, ObjectStreamResult } from './storage.types';
@@ -115,11 +116,12 @@ export class StorageService implements OnModuleInit {
     localFilePath: string,
     contentType = 'image/jpeg',
   ): Promise<void> {
+    const fileBuffer = await readFile(localFilePath);
     await this.s3Client.send(
       new PutObjectCommand({
         Bucket: this.cfg.thumbnailsBucket,
         Key: key,
-        Body: createReadStream(localFilePath),
+        Body: fileBuffer,
         ContentType: contentType,
       }),
     );

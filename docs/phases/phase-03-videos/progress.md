@@ -32,5 +32,5 @@
 
 ## SI-03.7 — Tests, Progress Tracking, and Documentation Sync
 - **Status:** completed
-- **Tests:** `docker compose exec nestjs-api npm test -- --runInBand` (pass), `docker compose exec nestjs-api npm run test:e2e` (pass), `docker compose exec nestjs-api npx tsc --noEmit` (pass), `docker compose exec nestjs-api npm run lint` (pass; warnings only).
-- **Observations:** Docker stack validated (`db`, `mailpit`, `minio`, `redis`, `video-worker`, `nestjs-api`); `.env` created from `.env.example` and `MAIL_FROM` normalized for dotenv parsing; lint legado tratado com ajuste de regras para arquivos de teste.
+- **Tests:** `docker compose exec nestjs-api npm test -- --runInBand` (pass), `docker compose exec nestjs-api npm run test:e2e` (pass, incluindo `test/videos.real.e2e-spec.ts` com fluxo real MinIO + fila + worker), `docker compose exec nestjs-api npx tsc --noEmit` (pass), `docker compose exec nestjs-api npm run lint` (pass; warnings only).
+- **Observations:** Docker stack validada (`db`, `mailpit`, `minio`, `redis`, `video-worker`, `nestjs-api`); `.env` criado de `.env.example` e `MAIL_FROM` normalizado para parsing; lint legado tratado com ajuste de regras para arquivos de teste.
