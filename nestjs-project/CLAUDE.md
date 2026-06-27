@@ -149,6 +149,27 @@ NestJS with standard module structure. Source lives in `src/`, compiled output i
 - Each domain feature gets its own module (e.g., `UsersModule`, `VideosModule`) registered in `AppModule`
 - Controllers handle HTTP routing; Services hold business logic; both are scoped to their module
 
+## Videos (Phase 03)
+
+Phase 03 adds asynchronous video upload and processing with three infrastructure services in `compose.yaml`:
+
+- `minio` (S3-compatible object storage) + `minio-setup` bucket bootstrap (`videos`, `thumbnails`)
+- `redis` (BullMQ broker)
+- `video-worker` (dedicated consumer running `npm run worker:dev`)
+
+Backend additions:
+
+- `src/videos/` module with:
+  - `POST /videos/uploads/init` (auth): creates draft + multipart upload session
+  - `POST /videos/uploads/sign-part` (auth): signs multipart part upload URL
+  - `POST /videos/uploads/complete` (auth): completes upload and enqueues processing
+  - `GET /videos/:slug` (public): ready-video metadata
+  - `GET /videos/:slug/stream` (public): byte-range streaming (`206`)
+  - `GET /videos/:slug/download` (public): full-file download
+- `videos` table and entity with status lifecycle: `draft -> processing -> ready|error`
+- Queue producer in `src/queue/` and storage abstraction in `src/storage/`
+- Worker entrypoint in `src/video-worker/main.ts` uses `ffprobe` + `ffmpeg` and updates DB/video thumbnail
+
 ## Code Conventions
 
 - **TypeScript:** `nodenext` module resolution, `ES2023` target, `strictNullChecks` on, `noImplicitAny` off

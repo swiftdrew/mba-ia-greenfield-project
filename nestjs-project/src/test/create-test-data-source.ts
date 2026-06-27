@@ -24,8 +24,29 @@ export function createTestDataSource(
 }
 
 export async function cleanAllTables(dataSource: DataSource): Promise<void> {
-  await dataSource.query('DELETE FROM "refresh_tokens"');
-  await dataSource.query('DELETE FROM "verification_tokens"');
-  await dataSource.query('DELETE FROM "channels"');
-  await dataSource.query('DELETE FROM "users"');
+  const tables = [
+    'videos',
+    'refresh_tokens',
+    'verification_tokens',
+    'channels',
+    'users',
+  ];
+
+  for (const table of tables) {
+    try {
+      await dataSource.query(`DELETE FROM "${table}"`);
+    } catch (err) {
+      if (
+        !(
+          err &&
+          typeof err === 'object' &&
+          'message' in err &&
+          typeof err.message === 'string' &&
+          err.message.includes(`relation "${table}" does not exist`)
+        )
+      ) {
+        throw err;
+      }
+    }
+  }
 }
